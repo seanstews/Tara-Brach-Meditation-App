@@ -110,7 +110,7 @@ function App() {
         <p className={styles.subtitle}>
           {!token 
             ? "Welcome! Click the button below to login to your Spotify account."
-            : "Select how long you have to meditate, then click the button to start a meditation led by Tara Brach that is within 2 minutes of the duration you selected."
+            : "Select how long you have to meditate, then click the button to start your meditation."
           }
         </p>
         
