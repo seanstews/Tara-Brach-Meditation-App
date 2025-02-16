@@ -1,0 +1,91 @@
+.container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  position: relative;
+  color: #e0e0e0;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  text-align: center;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Add some nice styling for the controls */
+input[type="range"] {
+  width: 280px;
+  margin: 30px auto;
+  -webkit-appearance: none;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #8B4513;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button {
+  background: #8B4513;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 10px 0;
+}
+
+button:hover {
+  background: #A0522D;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background: #5c5c5c;
+  cursor: not-allowed;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin-bottom: 20px;  /* Reduced from 40px to make room for subtitle */
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.5px;
+} 
