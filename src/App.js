@@ -108,7 +108,10 @@ function App() {
       <div className={styles.contentWrapper}>
         <h1 className={styles.title}>Tara Brach Meditation Player</h1>
         <p className={styles.subtitle}>
-          Select how long you have to meditate, then click the button to start a meditation.
+          {!token 
+            ? "Welcome! Click the button below to login to your Spotify account."
+            : "Select how long you have to meditate, then click the button to start a meditation led by Tara Brach that is within 2 minutes of the duration you selected."
+          }
         </p>
         
         {!token ? (
