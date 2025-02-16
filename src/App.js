@@ -14,11 +14,11 @@ function App() {
   const [hasFoundMeditation, setHasFoundMeditation] = useState(false);
 
   const loginToSpotify = () => {
-    const clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
-    const redirectUri = "http://localhost:3000";
-    const scopes = ["streaming", "user-read-email", "user-read-private"];
+    const redirectUri = window.location.href.includes('github.io') 
+      ? 'https://seanstews.github.io/Tara-Brach-Meditation-App'
+      : 'http://localhost:3000';
     
-    window.location.href = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`;
+    window.location.href = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=token&scope=user-read-private%20user-read-email%20user-library-read`;
   };
 
   useEffect(() => {
