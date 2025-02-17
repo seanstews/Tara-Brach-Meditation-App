@@ -19,12 +19,14 @@ function App() {
       : 'http://localhost:3000';
     
     const scopes = [
-      'user-read-private',
-      'user-read-email',
-      'user-library-read',
       'streaming',
+      'user-read-email',
+      'user-read-private',
+      'user-library-read',
       'user-read-playback-state',
-      'user-modify-playback-state'
+      'user-modify-playback-state',
+      'playlist-read-private',
+      'playlist-read-collaborative'
     ].join('%20');
     
     window.location.href = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scopes}&response_type=token&show_dialog=true`;
@@ -77,67 +79,67 @@ function App() {
       setIsLoading(true);
       setError(null);
       
+      console.log("Starting meditation search...");
       const initialSearch = await spotify.search('Tara Brach Meditation:', ['episode'], { limit: 1 });
       const totalEpisodes = initialSearch.episodes.total;
+      console.log(`Found ${totalEpisodes} total episodes`);
       
-      let foundMeditation = false;
-      let attempts = 0;
-      const maxAttempts = 10;
-      
-      while (!foundMeditation && attempts < maxAttempts) {
-        attempts++;
-        console.log(`Search attempt ${attempts} of ${maxAttempts}`);
-        
-        const maxOffset = Math.max(0, totalEpisodes - 50);
-        const randomOffset = Math.floor(Math.random() * maxOffset);
-        
-        console.log(`Total episodes: ${totalEpisodes}, Searching from offset: ${randomOffset}`);
-        
-        const result = await spotify.search(
-          'Tara Brach Meditation:', 
-          ['episode'], 
-          { 
-            limit: 50,
-            offset: randomOffset 
-          }
-        );
-        
-        const allMeditations = result.episodes.items;
-        const meditationEpisodes = allMeditations.filter(episode => 
-          episode.name.startsWith('Meditation:')
-        );
-
-        console.log(`Found ${meditationEpisodes.length} meditation episodes in this batch`);
-        
-        const targetDuration = selectedDuration * 60000;
-        const validMeditations = meditationEpisodes.filter(med => {
-          const durationDiff = Math.abs(med.duration_ms - targetDuration);
-          const isValid = durationDiff <= 120000;
-          
-          if (isValid) {
-            console.log(`Found matching meditation: ${med.name} - Duration: ${Math.floor(med.duration_ms/60000)} minutes`);
-          }
-          
-          return isValid;
-        });
-        
-        if (validMeditations.length > 0) {
-          const random = Math.floor(Math.random() * validMeditations.length);
-          setCurrentTrack(validMeditations[random]);
-          setHasFoundMeditation(true);
-          foundMeditation = true;
-        }
+      if (totalEpisodes === 0) {
+        setError("Unable to access Spotify podcast content. Please make sure you have a valid Spotify account with podcast access.");
+        setIsLoading(false);
+        return;
       }
+
+      const maxOffset = Math.max(0, totalEpisodes - 50);
+      const randomOffset = Math.floor(Math.random() * maxOffset);
       
-      if (!foundMeditation) {
-        setError(`Unable to find a meditation close to ${selectedDuration} minutes after ${maxAttempts} attempts. Please try a different duration.`);
+      console.log(`Searching from offset: ${randomOffset}`);
+      
+      const result = await spotify.search(
+        'Tara Brach Meditation:', 
+        ['episode'], 
+        { 
+          limit: 50,
+          offset: randomOffset 
+        }
+      );
+      
+      const allMeditations = result.episodes.items;
+      console.log(`Retrieved ${allMeditations.length} episodes in this batch`);
+      
+      const meditationEpisodes = allMeditations.filter(episode => 
+        episode.name.startsWith('Meditation:')
+      );
+
+      console.log(`Found ${meditationEpisodes.length} meditation episodes in this batch`);
+      
+      const targetDuration = selectedDuration * 60000;
+      const validMeditations = meditationEpisodes.filter(med => {
+        const durationDiff = Math.abs(med.duration_ms - targetDuration);
+        const isValid = durationDiff <= 120000;
+        
+        if (isValid) {
+          console.log(`Found matching meditation: ${med.name} - Duration: ${Math.floor(med.duration_ms/60000)} minutes`);
+        }
+        
+        return isValid;
+      });
+      
+      console.log(`Found ${validMeditations.length} meditations matching duration ${selectedDuration} minutes`);
+      
+      if (validMeditations.length > 0) {
+        const random = Math.floor(Math.random() * validMeditations.length);
+        setCurrentTrack(validMeditations[random]);
+        setHasFoundMeditation(true);
+      } else {
+        setError(`No meditations found close to ${selectedDuration} minutes. This might be due to Spotify access restrictions. Please try again or try a different duration.`);
         setCurrentTrack(null);
       }
       
     } catch (err) {
-      setError('Error finding meditation. Please try logging in again.');
-      console.error(err);
-      if (err.status === 401) {
+      console.error('Search error:', err);
+      setError(`Error finding meditation: ${err.message}. Please try logging in again.`);
+      if (err.status === 401 || err.status === 403) {
         setToken(null);
       }
     } finally {
