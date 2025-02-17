@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Tara-Brach-Meditation-App/static/css/main.3320848d.css",
-    "main.js": "/Tara-Brach-Meditation-App/static/js/main.5da36724.js",
+    "main.js": "/Tara-Brach-Meditation-App/static/js/main.e146f33b.js",
     "static/js/453.7ed6f0ab.chunk.js": "/Tara-Brach-Meditation-App/static/js/453.7ed6f0ab.chunk.js",
     "index.html": "/Tara-Brach-Meditation-App/index.html",
     "main.3320848d.css.map": "/Tara-Brach-Meditation-App/static/css/main.3320848d.css.map",
-    "main.5da36724.js.map": "/Tara-Brach-Meditation-App/static/js/main.5da36724.js.map",
+    "main.e146f33b.js.map": "/Tara-Brach-Meditation-App/static/js/main.e146f33b.js.map",
     "453.7ed6f0ab.chunk.js.map": "/Tara-Brach-Meditation-App/static/js/453.7ed6f0ab.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3320848d.css",
-    "static/js/main.5da36724.js"
+    "static/js/main.e146f33b.js"
   ]
 }
