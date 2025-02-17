@@ -18,7 +18,16 @@ function App() {
       ? 'https://seanstews.github.io/Tara-Brach-Meditation-App'
       : 'http://localhost:3000';
     
-    window.location.href = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=token&scope=user-read-private%20user-read-email%20user-library-read`;
+    const scopes = [
+      'user-read-private',
+      'user-read-email',
+      'user-library-read',
+      'streaming',
+      'user-read-playback-state',
+      'user-modify-playback-state'
+    ].join('%20');
+    
+    window.location.href = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scopes}&response_type=token&show_dialog=true`;
   };
 
   useEffect(() => {
@@ -27,14 +36,47 @@ function App() {
       const token = hash.substring(1).split("&")[0].split("=")[1];
       setToken(token);
       spotify.setAccessToken(token);
+      window.location.hash = "";
     }
-  }, []);
 
-  const findMeditation = async () => {
-    setIsLoading(true);
-    setError(null);
+    const validateToken = async () => {
+      const isValid = await checkTokenValidity();
+      if (!isValid && token) {
+        setToken(null);
+      }
+    };
+
+    validateToken();
+
+    const interval = setInterval(validateToken, 1800000);
+
+    return () => clearInterval(interval);
+  }, [token]);
+
+  const checkTokenValidity = async () => {
+    if (!token) return false;
     
     try {
+      await spotify.getMe();
+      return true;
+    } catch (error) {
+      console.log("Token expired or invalid");
+      setToken(null);
+      return false;
+    }
+  };
+
+  const findMeditation = async () => {
+    try {
+      const isValid = await checkTokenValidity();
+      if (!isValid) {
+        setError("Your session has expired. Please log in again.");
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+      
       const initialSearch = await spotify.search('Tara Brach Meditation:', ['episode'], { limit: 1 });
       const totalEpisodes = initialSearch.episodes.total;
       
@@ -93,8 +135,11 @@ function App() {
       }
       
     } catch (err) {
-      setError('Error finding meditation. Please try again.');
+      setError('Error finding meditation. Please try logging in again.');
       console.error(err);
+      if (err.status === 401) {
+        setToken(null);
+      }
     } finally {
       setIsLoading(false);
     }
